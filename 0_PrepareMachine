@@ -1,5 +1,5 @@
 ### Download pre-installed VmWare image
-wget https://www.osboxes.org/debian/#debian-12-11-0-vmware
+wget https://sourceforge.net/projects/osboxes/files/v/vm/14-D-bn/12.11.0/64bit.7z/download
 
 # Remove the default user and add a new one
 
