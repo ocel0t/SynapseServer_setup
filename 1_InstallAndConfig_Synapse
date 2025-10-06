@@ -1,0 +1,64 @@
+### Install and configure Synapse debian package maintained by matrix.org
+
+sudo apt install -y lsb-release wget apt-transport-https
+sudo wget -O /usr/share/keyrings/matrix-org-archive-keyring.gpg https://packages.matrix.org/debian/matrix-org-archive-keyring.gpg
+gpg /usr/share/keyrings/matrix-org-archive-keyring.gpg # Checking depository signing key fingerprint
+echo "deb [signed-by=/usr/share/keyrings/matrix-org-archive-keyring.gpg] https://packages.matrix.org/debian/ $(lsb_release -cs) main" |
+    sudo tee /etc/apt/sources.list.d/matrix-org.list
+sudo apt update
+sudo apt install matrix-synapse-py3
+
+# Configuring Synapse
+
+sudo nano /etc/matrix-synapse/homeserver.yaml
+
+''' CONTENT homeserver.yaml'''
+
+server_name: "hostname" # edit here
+pid_file: "/var/run/matrix-synapse.pid"
+
+#enable_registration: true
+#enable_registration_without_verification: true
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: yes
+    bind_addresses: ['127.0.0.1']
+    resources:
+      - names: [client, federation]
+        compress: false
+
+database:
+  name: psycopg2
+  args:
+    user: synapse_user # edit here
+    password: # edit here
+    dbname: synapse # edit here
+    host: localhost
+    cp_min: 5
+    cp_max: 10
+
+log_config: "/etc/matrix-synapse/log.yaml"
+media_store_path: /var/lib/matrix-synapse/media
+signing_key_path: "/etc/matrix-synapse/homeserver.signing.key"
+trusted_key_servers:
+  - server_name: "matrix.org"
+
+''''
+
+# Set server name in the Synapse config
+echo server_name:"hostname" > /etc/matrix-synapse/conf.d/server_name.yaml # edit here
+
+# Checking the matrix-synapse service running, monitoring logs
+
+sudo service matrix-synapse restart
+sudo service matrix-synapse status
+tail -f /var/log/matrix-synapse/homeserver.log
+
+# Don't forget to setup port forwarding to the server (80,443,8448)
+
+### Other useful debug commands
+sudo netstat -tulpn | grep 8448
+# https://federationtester.matrix.org
