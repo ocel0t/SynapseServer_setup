@@ -1,4 +1,4 @@
-Synapse Matrix homeserver setup on a Debian VM.
+<b> Synapse Matrix homeserver setup on a Debian VM. </b>
 
 0_PrepareMachine
 
